@@ -17,9 +17,16 @@
                         <div class="card-body">
                             <h2>{{ $post->title }}</h2>
                             <hr>
+                            <h3>Slug :</h3> 
                             <p>{{ $post->slug }}</p>
                             <hr>
+                            <h3>Contenuto :</h3> 
                             <p>{{ $post->content }}</p>
+                            <hr>
+                            <h3>Creatore :</h3> 
+                            <p>{{ $post->user->name }}</p>
+
+                            <h3>Date :</h3> 
                             <ul>
                                 <li>Data Creazione: {{ $post->created_at }}</li>
                                 <li>Data Ultima Modifica: {{ $post->updated_at }}</li>

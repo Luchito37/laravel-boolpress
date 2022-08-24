@@ -19,6 +19,7 @@
                             <th scope="col">Title</th>
                             <th scope="col">Content</th>
                             <th scope="col">Slug</th>
+                            <th scope="col">Autore</th>
                             <th scope="col"></th>
                         </tr>
                     </thead>
@@ -29,6 +30,7 @@
                                 <td>{{ $post->title }}</td>
                                 <td>{{ $post->content }}</td>
                                 <td>{{ $post->slug }}</td>
+                                <td>{{ $post->user->name }}</td>
                                 <td>
                                     <a href="{{ route('admin.posts.show', ['post' => $post->slug]) }}"
                                         class="btn btn-success">

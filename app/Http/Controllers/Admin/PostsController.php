@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class PostsController extends Controller
@@ -60,7 +61,17 @@ class PostsController extends Controller
      */
     public function index()
     {
-        $posts = Post::orderBy("created_at", "desc")->get();
+        //$posts = Post::orderBy("created_at", "desc")->get();
+        
+        // questa condizione viene fatta per poter suddividere la visine dei post per singolo utente
+        // in modo tale che l'utente possa vedere solo i propri post mentre l'admin tutti quanti
+        $user = Auth::user();
+        if($user->role === "admin"){
+            $posts = Post::orderBy("created_at", "desc")->get();
+        }else{
+            $posts =$user->posts;
+        }
+        
 
         return view("admin.posts.index", compact("posts"));
     }
@@ -94,6 +105,8 @@ class PostsController extends Controller
         $post = new Post();
 
         $post->fill($validatedData);
+
+        $post->user_id =Auth::user()->id;
 
         /* $slug = Str::slug($post->title);
         $slug_exist = Post::where("slug", $slug)->first;

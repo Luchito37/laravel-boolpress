@@ -41,4 +41,8 @@ class User extends Authenticatable
     public function details() {
         return $this->hasOne('App\UserDatail');
     }
+
+    public function posts() {
+        return $this->hasMany("App\Post");
+    }
 }
