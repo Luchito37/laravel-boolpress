@@ -17,7 +17,7 @@ class AddCategoryFkToPostsTable extends Migration
             $table->unsignedBigInteger("category_id")->nullable();
             $table->foreign("category_id")
                 ->references("id")
-                ->on("cotegories");
+                ->on("categories");
         });
     }
 

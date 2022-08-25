@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Category;
 use App\Http\Controllers\Controller;
 use App\Post;
 use Illuminate\Http\Request;
@@ -10,45 +11,45 @@ use Illuminate\Support\Str;
 
 class PostsController extends Controller
 {
-    
+
     //questa funzione ritornanun un elemneto cercandolo per il suo slug
     private function findBySlug($slug)
     {
         $post = Post::where("slug", $slug)->first();
 
-        if (!$post){
+        if (!$post) {
             abort(404);
         }
 
         return $post;
     }
 
-    private function generateSlug($text){
+    private function generateSlug($text)
+    {
         $toReturn = null;
 
         $counter = 0;
-        do{
+        do {
             //genero uno slug partendo dal titolo
             $slug = Str::slug($text);
 
             //se il counter è maggiore di zero, allego al suo valore lo slug
-            if($counter > 0){
-                
-                $slug .="-" . $counter;
+            if ($counter > 0) {
+
+                $slug .= "-" . $counter;
             }
-            
+
             //controllo nel databse se esiste un slug uguale 
             $slug_exist = Post::where("slug", $slug)->first();
 
-            if($slug_exist){
+            if ($slug_exist) {
                 //se esiste lo slug incremento il valore del counter per il giro successivo
                 $counter++;
-            }else{
+            } else {
                 //altrimenti salvo lo slugnei dati del nuovo post
                 $toReturn = $slug;
             }
-
-        }while($slug_exist);
+        } while ($slug_exist);
 
         return $toReturn;
     }
@@ -62,16 +63,16 @@ class PostsController extends Controller
     public function index()
     {
         //$posts = Post::orderBy("created_at", "desc")->get();
-        
+
         // questa condizione viene fatta per poter suddividere la visine dei post per singolo utente
         // in modo tale che l'utente possa vedere solo i propri post mentre l'admin tutti quanti
         $user = Auth::user();
-        if($user->role === "admin"){
+        if ($user->role === "admin") {
             $posts = Post::orderBy("created_at", "desc")->get();
-        }else{
-            $posts =$user->posts;
+        } else {
+            $posts = $user->posts;
         }
-        
+
 
         return view("admin.posts.index", compact("posts"));
     }
@@ -83,7 +84,9 @@ class PostsController extends Controller
      */
     public function create()
     {
-        return view("admin.posts.create");
+        $categories = Category::all();
+
+        return view("admin.posts.create", compact("categories"));
     }
 
     /**
@@ -98,7 +101,10 @@ class PostsController extends Controller
 
         $validatedData = $request->validate([
             "title" => "required|min:10",
-            "content" => "required|min:10"
+            "content" => "required|min:10",
+            // preciso l'esistenza dell'"id" della colonna categories per una sicurezza ulteriore nei confronti
+            // dei malintenzionati
+            "category_id" => "required|exists:categories,id"
         ]);
 
         //salvo i dati nel database
@@ -106,7 +112,7 @@ class PostsController extends Controller
 
         $post->fill($validatedData);
 
-        $post->user_id =Auth::user()->id;
+        $post->user_id = Auth::user()->id;
 
         /* $slug = Str::slug($post->title);
         $slug_exist = Post::where("slug", $slug)->first;
@@ -119,7 +125,7 @@ class PostsController extends Controller
             $slug_exist = Post::where("slug", $slug)->first();
 
         }*/
-        
+
         /*$counter = 0;
 
         do{
@@ -154,9 +160,6 @@ class PostsController extends Controller
         //redirect nella pagina che vogliamo 
 
         return redirect()->route("admin.posts.show", $post->slug);
-
-
-
     }
 
     /**
@@ -186,7 +189,7 @@ class PostsController extends Controller
     public function edit($slug)
     {
         /*$post = Post::where("slug", $slug)->first();*/
-        
+
         $post = $this->findBySlug($slug);
 
         return view("admin.posts.edit", compact("post"));
@@ -210,7 +213,7 @@ class PostsController extends Controller
         /*$post = Post::where("slug", $slug)->first();*/
         $post = $this->findBySlug($slug);
 
-        if($validatedData["title"] !== $post->title){
+        if ($validatedData["title"] !== $post->title) {
             //genero un nuovo slug
             $post->slug = $this->generateSlug($validatedData["title"]);
         }

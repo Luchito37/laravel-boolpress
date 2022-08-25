@@ -25,6 +25,9 @@
                             <hr>
                             <h3>Creatore :</h3> 
                             <p>{{ $post->user->name }}</p>
+                            <hr>
+                            <h3>Categoria :</h3> 
+                            <p>{{ $post->category ? $post->category->name : "" }}</p>
 
                             <h3>Date :</h3> 
                             <ul>
