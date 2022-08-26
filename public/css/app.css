@@ -10968,3 +10968,16 @@ a.text-dark:focus {
   }
 }
 
+.altezzaLine {
+  max-height: 100px;
+}
+
+.vl {
+  border-left: 3px solid rgb(57, 193, 115);
+  height: 70px;
+}
+
+.gradient {
+  background-image: radial-gradient(circle, #ffffff, #eaeef3, #d0dfe4, #b8d1cd, #acc0af);
+}
+

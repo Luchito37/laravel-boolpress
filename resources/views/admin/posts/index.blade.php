@@ -5,10 +5,10 @@
         <div class="row justify-content-center">
             <div class="col-12">
                 <div class="d-flex justify-content-between align-posts-center">
-                    <h1 class=" text-success">LISTA POSTS
+                    <h1 class="text-white bg-success p-3">LISTA POSTS
                     </h1>
-                    <a href="{{ route('admin.posts.create') }}" class="btn">
-                        <span class="border border-success rounded-pill border-3 border-opacity-50 p-3">Crea qui il tuo
+                    <a href="{{ route('admin.posts.create') }}" class="btn p-3 d-flex">
+                        <span class=" border border-success rounded-pill border-3 border-opacity-50 px-3 d-flex align-items-center">Crea qui il tuo
                             post</span>
                     </a>
                 </div>
@@ -20,6 +20,8 @@
                             <th scope="col">Content</th>
                             <th scope="col">Slug</th>
                             <th scope="col">Autore</th>
+                            <th scope="col">Categorie</th>
+                            <th scope="col">Tag</th>
                             <th scope="col"></th>
                         </tr>
                     </thead>
@@ -31,6 +33,8 @@
                                 <td>{{ $post->content }}</td>
                                 <td>{{ $post->slug }}</td>
                                 <td>{{ $post->user->name }}</td>
+                                <td>{{ $post->category ? $post->category->name : "" }}</td>
+                                <td>{{ $post->tags->implode("name", ", ") }}</td>
                                 <td>
                                     <a href="{{ route('admin.posts.show', ['post' => $post->slug]) }}"
                                         class="btn btn-success">

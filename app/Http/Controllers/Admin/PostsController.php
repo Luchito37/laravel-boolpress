@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Category;
 use App\Http\Controllers\Controller;
 use App\Post;
+use App\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -85,8 +86,9 @@ class PostsController extends Controller
     public function create()
     {
         $categories = Category::all();
+        $tags = Tag::all();
 
-        return view("admin.posts.create", compact("categories"));
+        return view("admin.posts.create", compact("categories", "tags"));
     }
 
     /**
@@ -104,7 +106,8 @@ class PostsController extends Controller
             "content" => "required|min:10",
             // preciso l'esistenza dell'"id" della colonna categories per una sicurezza ulteriore nei confronti
             // dei malintenzionati
-            "category_id" => "required|exists:categories,id"
+            "category_id" => "required|exists:categories,id",
+            "tags"=> "nullable"
         ]);
 
         //salvo i dati nel database
@@ -156,7 +159,14 @@ class PostsController extends Controller
 
         $post->save();
 
+        //qui non ho bisogno del sinc perchè so che prima non esisteva nulla
 
+        if (key_exists("tags", $validatedData)) {
+            $post->tags()->attach($validatedData["tags"]);
+        } // e non devo fare l'esle perchè se l'utente non dovesse passarmi nulla non è un problema
+
+        // NOTARE CHE ABBIAMO FATTO L'ASSOCIAIZONE SOLAMENTE DOPO IL $POST->SVAE()
+        // PROPRIO PERCHè SI ACQUISISCE L'ID SOLAMENTE DOPO IL SAVE 
         //redirect nella pagina che vogliamo 
 
         return redirect()->route("admin.posts.show", $post->slug);
@@ -191,8 +201,11 @@ class PostsController extends Controller
         /*$post = Post::where("slug", $slug)->first();*/
 
         $post = $this->findBySlug($slug);
+        $categories = Category::all();
+        $tags = Tag::all();
 
-        return view("admin.posts.edit", compact("post"));
+
+        return view("admin.posts.edit", compact("post", "categories", "tags"));
     }
 
     /**
@@ -207,7 +220,9 @@ class PostsController extends Controller
 
         $validatedData = $request->validate([
             "title" => "required|min:10",
-            "content" => "required|min:10"
+            "content" => "required|min:10",
+            "category_id" => "nullable|exists:categories,id",
+            "tags" => "nullable|exists:tags,id"
         ]);
 
         /*$post = Post::where("slug", $slug)->first();*/
@@ -217,6 +232,29 @@ class PostsController extends Controller
             //genero un nuovo slug
             $post->slug = $this->generateSlug($validatedData["title"]);
         }
+
+        //ciò vuol dire che se l'utente inserisce dei dati aggiorno la tabella post_tag altrimenti non insrisco nulla e svuoto 
+        if (key_exists("tags", $validatedData)) {
+            // toglie dalla tabella ponte tutte le relazioni del post 
+            $post->tags()->detach();
+
+            // aggiunge alla tebella ponte una riga per ogni tag attribuito al post corrente
+            $post->tags()->attach($validatedData["tags"]);
+        } else if (!key_exists("tags", $validatedData)) {
+            $post->tags()->detach();
+        }
+
+        /*
+        if (key_exists("tags", $validatedData)) {
+            //utilizziamo il sinc per avere sia un vantaggio di scrittura che un detach automatuco
+                ma senza avere il problema dell'id che va avanti aggiornandosi
+            $post->tags()->sync($validatedData["tags"]);
+        } else{
+            lo faccio per evitare che di aerrore non avendo contenuto nella tabella tag
+            $post->tags()->sync();
+        }
+
+        */
 
         $post->update($validatedData);
 
@@ -233,6 +271,10 @@ class PostsController extends Controller
     {
         $post = $this->findBySlug($slug);
 
+        $post->tags()->detach();
+
+        // eliminiamo relazioni attive, 
+        // che ci creereebbero problemi per l'eliminazione del post
         $post->delete();
 
         return redirect()->route("admin.posts.index");
