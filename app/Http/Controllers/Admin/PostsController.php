@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Category;
 use App\Http\Controllers\Controller;
+use App\Mail\SendNewMail;
 use App\Post;
 use App\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class PostsController extends Controller
@@ -107,7 +110,8 @@ class PostsController extends Controller
             // preciso l'esistenza dell'"id" della colonna categories per una sicurezza ulteriore nei confronti
             // dei malintenzionati
             "category_id" => "required|exists:categories,id",
-            "tags"=> "nullable"
+            "tags"=> "nullable",
+            "cover_img" =>"required|image"
         ]);
 
         //salvo i dati nel database
@@ -154,6 +158,13 @@ class PostsController extends Controller
 
         }while($slug_exist);*/
 
+         //salvo così facendo i dati nel mio server
+            // Storage::put ritorna il il link del file
+            $coverImg = Storage::put("/post_covers", $validatedData["cover_img"]);
+
+            // salvo dentroal post i adti del link appena caricato
+            $post->cover_img=$coverImg;
+
         //grazie alla funzione creta sopra posso scrivere :
         $post->slug = $this->generateSlug($post->title);
 
@@ -163,12 +174,15 @@ class PostsController extends Controller
 
         if (key_exists("tags", $validatedData)) {
             $post->tags()->attach($validatedData["tags"]);
-        } // e non devo fare l'esle perchè se l'utente non dovesse passarmi nulla non è un problema
+        } // e non devo fare l'elsee perchè se l'utente non dovesse passarmi nulla non è un problema
+
+        Mail::to($post->user)->send(new SendNewMail( $post));
 
         // NOTARE CHE ABBIAMO FATTO L'ASSOCIAIZONE SOLAMENTE DOPO IL $POST->SVAE()
         // PROPRIO PERCHè SI ACQUISISCE L'ID SOLAMENTE DOPO IL SAVE 
-        //redirect nella pagina che vogliamo 
 
+
+        //redirect nella pagina che vogliamo 
         return redirect()->route("admin.posts.show", $post->slug);
     }
 
@@ -222,11 +236,30 @@ class PostsController extends Controller
             "title" => "required|min:10",
             "content" => "required|min:10",
             "category_id" => "nullable|exists:categories,id",
-            "tags" => "nullable|exists:tags,id"
+            "tags" => "nullable|exists:tags,id",
+            "cover_img"=>"nullable|image"
         ]);
 
         /*$post = Post::where("slug", $slug)->first();*/
         $post = $this->findBySlug($slug);
+
+        // un input di tipo file no sarà mai obbligatorio, per via di eventuali modifiche da fare successivamente
+
+        // ora dobiamo controllare se stato inviato
+        if(key_exists("cover_img", $validatedData)){
+
+            // condizione che vincola l'immagine precedente se si svuole cambiare ada essere eliminata dal datbase
+            if($post->cover_img){
+
+                Storage::delete($post->cover_img);
+            }
+            //salvo così facendo i dati nel mio server
+            // Storage::put ritorna il il link del file
+            $coverImg = Storage::put("/post_covers", $validatedData["cover_img"]);
+
+            // salvo dentroal post i adti del link appena caricato
+            $post->cover_img=$coverImg;
+        }
 
         if ($validatedData["title"] !== $post->title) {
             //genero un nuovo slug

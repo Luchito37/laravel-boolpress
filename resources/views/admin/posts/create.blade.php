@@ -9,6 +9,16 @@
             @csrf
             <div class="form-group">
                 <div class="form-group">
+                    <label>Immagine Post</label>
+                    <input type="file" name="cover_img" class="form-control @error('cover_img') is-invalid @enderror"
+                        placeholder="Inserisci il titolo" value=" {{old("cover_img")}} ">
+                    @error('cover_img')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-group">
                     <label>Titolo</label>
                     <input type="text" name="title" class="form-control @error('title') is-invalid @enderror"
                         placeholder="Inserisci il titolo" value="{{ old('title') }}" required>
@@ -36,7 +46,7 @@
                     placeholder="Inizia a scrivere qualcosa...">
                     <option value=""></option>
                     @foreach ($tags as $tag)
-                        <option value="{{ $tag->id }}" >{{ $tag->name }}</option> {{-- {{old("tags", $post->tag_id) === $tag->id ? 'selected' : "" }} --}}
+                        <option value="{{ $tag->id }}" >{{ $tag->name }}</option> {{-- {{old("tags", $post ?? ''->tag_id) === $tag->id ? 'selected' : "" }} --}}
                     @endforeach
                 </select>
                 @error('tags')

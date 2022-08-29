@@ -35,6 +35,7 @@ Route::middleware('auth')
     Route::get('users/{user}/edit', "UserController@edit")->name('users.edit');
 
     Route::resource("posts", "PostsController");
+    Route::resource('tagsposts', 'TagsPostsController');
 });
 
 

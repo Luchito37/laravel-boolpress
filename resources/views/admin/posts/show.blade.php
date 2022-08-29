@@ -14,6 +14,7 @@
                                 <polyline points="10 18 4 12 10 6"></polyline>
                             </svg> Tutti i posts
                         </a>
+                        <img class="card-img-top" src="{{asset('storage/' . $post->cover_img ) }}" alt="Card image cap" width="100" height="200">
                         <div class="card-body">
                             <h2>{{ $post->title }}</h2>
                             <hr>
@@ -30,7 +31,7 @@
                             <p>{{ $post->category ? $post->category->name : '' }}</p>
                             <hr>
                             <h3>Tag :</h3>
-                            <p>
+                            <a href="{{ route('admin.tagsposts.index')}}">
                                 {{-- la lettur va sempre fatta con $post->argomento ma essendo però un array di oggetti in quetso caso occore
                                     fare un ciclo "foreach" --}}
                                 @foreach ($post->tags as $tag)
@@ -46,7 +47,7 @@
                                     scrivendo semplicemente questo:
 
                                     {{ $post->tags->implode("name", ", ")}} --}}
-                            </p>
+                            </a>
 
                             <h3>Date :</h3>
                             <ul>

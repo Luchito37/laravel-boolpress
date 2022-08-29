@@ -11,6 +11,17 @@
             @method('PUT')
             <div class="form-group">
                 <div class="form-group">
+                    <label>Immagine Post</label>
+                    <img class="card-img-top" src="{{asset('storage/' . $post->cover_img ) }}" alt="Card image cap" width="100" height="200">
+                    <input type="file" name="cover_img" class="form-control @error('cover_img') is-invalid @enderror"
+                        placeholder="Inserisci il titolo" value=" {{old("cover_img", $post->cover_img) === $post->cover_img ? $post->cover_img : "" }} ">
+                    @error('cover_img')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-group">
                     <label>Titolo</label>
                     <input type="text" name="title" class="form-control @error('title') is-invalid @enderror"
                         placeholder="Inserisci il titolo" value=" {{old("title", $post->title) === $post->title ? $post->title : "" }} "required>
