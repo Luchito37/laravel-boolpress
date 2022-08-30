@@ -14,7 +14,8 @@
                                 <polyline points="10 18 4 12 10 6"></polyline>
                             </svg> Tutti i posts
                         </a>
-                        <img class="card-img-top" src="{{asset('storage/' . $post->cover_img ) }}" alt="Card image cap" width="100" height="200">
+                        {{-- <img class="card-img-top" src="{{asset('storage/' . $post->cover_img ) }}"> --}}
+                        <img class="card-img-top" src="{{Storage::url($post->cover_img)}}">
                         <div class="card-body">
                             <h2>{{ $post->title }}</h2>
                             <hr>

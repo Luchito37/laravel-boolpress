@@ -2,9 +2,12 @@
     <div class="form-group">
                 <div class="form-group">
                     <label :for="name + '_file'" class="form-label">Immagine Post</label>
-                    <img class="card-img-top" style="max-width: 250px;" :src="immagineProvvissoria" alt="">
-                    <input type="file" :name="name" class="form-control-file"
+                    <div>
+                        <img class="card-img-top" style="max-width: 250px;" :src="immagineProvvissoria" alt="">
+                        <input type="file" :name="name" class="form-control-file"
                         placeholder="Inserisci il titolo" @change="fileImmagine" :id="name + '_file'">
+                    </div>
+                    
                 </div>
             </div>
 </template>
