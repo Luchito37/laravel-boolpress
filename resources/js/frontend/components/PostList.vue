@@ -1,8 +1,9 @@
 <template>
-  <div class="container">
-    <div class="row row-cols-3">
+<div>
+    <div class="container">
+    <div class="row row-cols-4">
       <div class="col" v-for="post in posts" :key="post.id">
-        <div class="card altezzaCard mb-4" style="width: 18rem">
+        <div class="card altezzaCard mb-4" style="width: 15rem">
           <img class="card-img-top" :src=" post.cover_img" />
           <div class="card-body">
             <h5 class="card-title">{{post.title}}</h5>
@@ -14,30 +15,50 @@
         </div>
       </div>
     </div>
+    <div class="d-flex justify-content-center">
+        <Pagination :current-page="paginationData.current_page"
+    :next-page="paginationData.current_page + 1" 
+    :total-pages="paginationData.last_page"
+    @changePage="onChangePage"></Pagination>
+    </div>
+    
   </div>
+
+</div>
 </template>
 
 <script>
 import axios from "axios";
+import Pagination from "./Pagination.vue"
 
 export default {
+    components:{
+        Pagination,
+    },
   data() {
     return {
-        posts: []
+        posts: [],
+        paginationData: {}
+
     };
   },
   methods: {
-    fetchPosts(){
-        axios.get("/api/posts")
+    fetchPosts(newPage = 1){
+        axios.get("/api/posts?page=" + newPage)
         .then((resp)=> {
-            this.posts = resp.data
+            this.posts = resp.data.data;
+            this.paginationData = resp.data
 
         })
+    },
+    onChangePage(newPage){
+        this.fetchPosts(newPage);
     }
   },
   mounted(){
     this.fetchPosts();
-  }
+  },
+
 };
 </script>
 
@@ -48,10 +69,10 @@ export default {
     object-fit: cover;
 }
 .altezzaCard{
-    max-height: 500px;
+    height: 450px;
 }
 .altezzatesto{
-    max-height: 80px;
+    max-height: 100px;
 }
 
 </style>
