@@ -9,7 +9,9 @@
         <form action="{{ route('admin.posts.update', ['post'=>$post->slug]) }}" method="post" enctype="multipart/form-data">
             @csrf
             @method('PUT')
-            <div class="form-group">
+
+            <file-input></file-input>
+            {{--<div class="form-group">
                 <div class="form-group">
                     <label>Immagine Post</label>
                     <img class="card-img-top" src="{{asset('storage/' . $post->cover_img ) }}" alt="Card image cap" width="100" height="200">
@@ -19,7 +21,7 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
-            </div>
+            </div>--}}
             <div class="form-group">
                 <div class="form-group">
                     <label>Titolo</label>

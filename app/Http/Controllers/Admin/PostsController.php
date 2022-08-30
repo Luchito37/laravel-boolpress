@@ -111,7 +111,7 @@ class PostsController extends Controller
             // dei malintenzionati
             "category_id" => "required|exists:categories,id",
             "tags"=> "nullable",
-            "cover_img" =>"required|mimes:jpg, jpeg, png, svg"
+            "cover_img" =>"required|image"
         ]);
 
         //salvo i dati nel database
