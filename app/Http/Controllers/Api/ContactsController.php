@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Post;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Date;
 
-class PostController extends Controller
+class ContactsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,24 +16,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        // "paginate()" si utilizza per fare un impaginazione
-        $posts = Post::paginate(8);
-
-
-        $posts->map(function ($post) {
-
-            if($post->cover_img){
-                $post->cover_img = asset("storage/" . $post->cover_img);
-            }else{
-                $post->cover_img = asset("/img/Boolics.png");
-
-            }
-            
-
-            return $post;
-
-        });
-        return response()->json($posts);
+        //
     }
 
     /**
@@ -54,7 +37,15 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->all();
+
+        return [
+            "id"=> rand(1, 1000),
+            "name"=> $data["name"],
+            "message"=> $data["message"],
+            "created_at"=> Carbon::now()->toDateTimeString(),
+            "updated_at"=> Carbon::now()->toDateTimeString(),
+        ];
     }
 
     /**
@@ -63,20 +54,9 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($slug)
+    public function show($id)
     {
-        $post = Post::all();
-
-       
-
-        if($post === $post){
-            $post = Post::where("slug", $slug)->first();
-             $post->cover_img = Storage::url($post->cover_img);
-
-             return response()->json($post);
-        } 
-
-        return response()->json($post);
+        //
     }
 
     /**

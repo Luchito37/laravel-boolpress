@@ -10,8 +10,8 @@
             <p class="card-text altezzatesto overflow-auto">
               {{post.content}}
             </p>
-            <a href="#" class="btn btn-primary">Go somewhere</a>
-          </div>
+              <router-link :to="{name: 'posts.show', params: {slug: post.slug }}" class="btn btn-primary">Vai al post</router-link>
+            </div>
         </div>
       </div>
     </div>
